@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Manufacturer - Auto Parts Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="parts.html">All Parts</a>
+  <a href="cars.html">All Cars</a>
+  <a href="manufacturers.html">Manufacturers</a>
+  <span id="user-status"></span>
+  <a href="cart.html">Cart</a>
+</nav>
+<div class="container">
+  <h2>Add New Manufacturer</h2>
+  <form id="addManufacturerForm">
+    <label>Name:</label><br>
+    <input type="text" id="name"><br>
+    <label>Country:</label><br>
+    <input type="text" id="country"><br>
+    <label>Address:</label><br>
+    <input type="text" id="address"><br>
+    <label>Phone:</label><br>
+    <input type="text" id="phone"><br>
+    <label>Fax:</label><br>
+    <input type="text" id="fax"><br>
+    <button type="submit">Add Manufacturer</button>
+  </form>
+  <p id="addResult"></p>
+</div>
+<script src="main.js"></script>
+<script>
+  document.getElementById('addManufacturerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const manufacturer = {
+      name: document.getElementById('name').value,
+      country: document.getElementById('country').value,
+      address: document.getElementById('address').value,
+      phone: document.getElementById('phone').value,
+      fax: document.getElementById('fax').value
+    };
+
+    const res = await fetch(API_BASE + '/api/manufacturers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(manufacturer)
+    });
+    if (res.ok) {
+      document.getElementById('addResult').textContent = 'Manufacturer added successfully!';
+    } else {
+      document.getElementById('addResult').textContent = 'Error adding manufacturer.';
+    }
+  });
+</script>
+</body>
+</html>

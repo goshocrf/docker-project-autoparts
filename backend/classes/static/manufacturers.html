@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manufacturers - Auto Parts Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="parts.html">All Parts</a>
+  <a href="cars.html">All Cars</a>
+  <a href="manufacturers.html">Manufacturers</a>
+  <span id="user-status"></span>
+  <a href="cart.html">Cart</a>
+</nav>
+<div class="container">
+  <h2>All Manufacturers</h2>
+  <input type="text" id="manSearch" placeholder="Search manufacturers...">
+  <ul id="mansList"></ul>
+</div>
+<script src="main.js"></script>
+<script>
+  let user = await isLoggedIn();
+  if (user.role === 'ADMIN') {
+    const nav = document.querySelector('nav');
+    nav.innerHTML += '<a href="add_part.html">Add Part</a>';
+    nav.innerHTML += '<a href="add_car.html">Add Car</a>';
+    nav.innerHTML += '<a href="add_manufacturer.html">Add Manufacturer</a>';
+  }
+  // Client-side search/filter for manufacturers list
+  document.getElementById('manSearch').addEventListener('input', function() {
+    const filter = this.value.toUpperCase();
+    const lis = document.getElementById('mansList').getElementsByTagName('li');
+    for (let i = 0; i < lis.length; i++) {
+      const txt = lis[i].textContent || lis[i].innerText;
+      lis[i].style.display = txt.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+    }
+  });
+</script>
+</body>
+</html>
