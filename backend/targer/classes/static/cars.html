@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Cars - Auto Parts Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="parts.html">All Parts</a>
+  <a href="cars.html">All Cars</a>
+  <a href="manufacturers.html">Manufacturers</a>
+  <span id="user-status"></span>
+  <a href="cart.html">Cart</a>
+</nav>
+<div class="container">
+  <h2>All Cars</h2>
+  <input type="text" id="carSearch" placeholder="Search cars...">
+  <ul id="carsList"></ul>
+</div>
+<script src="main.js"></script>
+<script>
+  isLoggedIn().then(user => {
+    console.log(user);  // DEBUG — check if correct
+    if (user && user.role === 'ADMIN') {
+      const nav = document.querySelector('nav');
+      nav.innerHTML += `
+      <a href="add_part.html">Add Part</a>
+      <a href="add_car.html">Add Car</a>
+      <a href="add_manufacturer.html">Add Manufacturer</a>
+    `;
+    }
+  });
+
+
+  document.getElementById('carSearch').addEventListener('input', function() {
+    const filter = this.value.toUpperCase();
+    const lis = document.getElementById('carsList').getElementsByTagName('li');
+    for (let i = 0; i < lis.length; i++) {
+      const txt = lis[i].textContent || lis[i].innerText;
+      lis[i].style.display = txt.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+    }
+  });
+</script>
+</body>
+</html>
