@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Auto Parts Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="parts.html">All Parts</a>
+  <a href="cars.html">All Cars</a>
+  <a href="manufacturers.html">Manufacturers</a>
+  <span id="user-status"></span>
+  <a href="cart.html">Cart</a>
+</nav>
+<div class="container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <label>Email:</label><br>
+    <input type="email" id="email"><br>
+    <label>Password:</label><br>
+    <input type="password" id="password"><br>
+    <button type="submit">Login</button>
+  </form>
+  <p id="loginError" style="color:red"></p>
+  <p>Don't have an account? <a href="register.html">Register</a></p>
+</div>
+<script src="main.js"></script>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const res = await fetch(API_BASE + '/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({email, password})
+    });
+    if (res.ok) {
+      window.location = 'index.html';
+    } else {
+      document.getElementById('loginError').textContent = 'Login failed';
+    }
+  });
+</script>
+</body>
+</html>

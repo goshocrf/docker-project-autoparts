@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Part - Auto Parts Shop</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .car-item { margin: 5px 0; }
+    .car-item button { margin-left: 10px; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="parts.html">All Parts</a>
+  <span id="user-status"></span>
+</nav>
+<div class="container">
+  <h2>Add New Part</h2>
+  <form id="addPartForm">
+    <label>Name:</label><br>
+    <input type="text" id="name"><br>
+    <label>Code:</label><br>
+    <input type="text" id="code"><br>
+    <label>Category:</label><br>
+    <select id="category">
+      <option value="Engine">Engine</option>
+      <option value="Tires">Tires</option>
+      <option value="Exhaust">Exhaust</option>
+      <option value="Brakes">Brakes</option>
+      <option value="Suspension">Suspension</option>
+      <option value="Body">Body</option>
+      <option value="Accessories">Accessories</option>
+    </select><br>
+    <label>Buy Price:</label><br>
+    <input type="number" id="buyPrice" step="0.01"><br>
+    <label>Sell Price:</label><br>
+    <input type="number" id="sellPrice" step="0.01"><br>
+
+    <label>Supported Cars:</label><br>
+    <select id="carDropdown">
+      <option value="">-- Select Car --</option>
+    </select>
+    <button type="button" id="addCarButton">Add Car</button><br>
+
+    <div id="selectedCarsList"></div>
+
+    <button type="submit">Add Part</button>
+  </form>
+  <p id="addResult"></p>
+</div>
+<script src="main.js"></script>
+<script>
+  const selectedCarIds = [];
+
+  async function loadCars() {
+    const res = await fetch(API_BASE + '/api/cars', { credentials: 'include' });
+    if (!res.ok) {
+      console.error('Failed to load cars');
+      return;
+    }
+    const cars = await res.json();
+    const carDropdown = document.getElementById('carDropdown');
+    cars.forEach(car => {
+      const option = document.createElement('option');
+      option.value = car.id;
+      option.textContent = `${car.brand} ${car.model} (${car.year})`;
+      carDropdown.appendChild(option);
+    });
+  }
+
+  document.getElementById('addCarButton').addEventListener('click', () => {
+    const carDropdown = document.getElementById('carDropdown');
+    const carId = carDropdown.value;
+    if (!carId || selectedCarIds.includes(carId)) return;
+
+    // Add to selected list
+    selectedCarIds.push(carId);
+    const selectedCarsList = document.getElementById('selectedCarsList');
+    const carItem = document.createElement('div');
+    carItem.className = 'car-item';
+    carItem.dataset.carId = carId;
+    carItem.innerHTML = `${carDropdown.options[carDropdown.selectedIndex].textContent}
+        <button type="button" class="removeCarButton">Remove</button>`;
+    selectedCarsList.appendChild(carItem);
+
+    // Remove from dropdown
+    carDropdown.remove(carDropdown.selectedIndex);
+    carDropdown.selectedIndex = 0;
+  });
+
+  document.getElementById('selectedCarsList').addEventListener('click', (e) => {
+    if (e.target.classList.contains('removeCarButton')) {
+      const carItem = e.target.parentElement;
+      const carId = carItem.dataset.carId;
+      const carName = carItem.childNodes[0].textContent.trim();
+
+      // Remove from selected list
+      carItem.remove();
+      const index = selectedCarIds.indexOf(carId);
+      if (index !== -1) selectedCarIds.splice(index, 1);
+
+      // Add back to dropdown
+      const option = document.createElement('option');
+      option.value = carId;
+      option.textContent = carName;
+      document.getElementById('carDropdown').appendChild(option);
+    }
+  });
+
+  document.getElementById('addPartForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const part = {
+      name: document.getElementById('name').value,
+      code: document.getElementById('code').value,
+      category: document.getElementById('category').value,
+      buyPrice: parseFloat(document.getElementById('buyPrice').value),
+      sellPrice: parseFloat(document.getElementById('sellPrice').value),
+      supportedCars: selectedCarIds
+    };
+
+    const res = await fetch(API_BASE + '/api/parts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(part)
+    });
+    if (res.ok) {
+      document.getElementById('addResult').textContent = 'Part added successfully!';
+      window.location = 'parts.html';
+    } else {
+      document.getElementById('addResult').textContent = 'Error adding part';
+    }
+  });
+
+  loadCars();
+</script>
+</body>
+</html>
